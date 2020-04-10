@@ -1,0 +1,14 @@
+{
+    "name": "gist/walgreens",
+    "description": "Integration for the walgreens photoprint API",
+    "type": "ccomposer-plugin",
+    "require": {
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "authors": [
+        {
+            "name": "Zachary Fair",
+            "email": "support@appsbypix.com"
+        }
+    ]
+}
