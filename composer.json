@@ -1,9 +1,15 @@
 {
     "name": "gist/walgreens",
     "description": "Integration for the walgreens photoprint API",
-    "type": "ccomposer-plugin",
+    "type": "composer-plugin",
     "require": {
         "guzzlehttp/guzzle": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "WalgreensClient\\": "src/",
+            "Gist\\Walgreens\\": ""
+        }
     },
     "authors": [
         {
