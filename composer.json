@@ -3,6 +3,7 @@
     "description": "Integration for the walgreens photoprint API",
     "type": "composer-plugin",
     "require": {
+        "php": ">=5.5.0",
         "guzzlehttp/guzzle": "^6.5"
     },
     "autoload": {
