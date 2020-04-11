@@ -10,7 +10,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * Client interface for sending HTTP requests.
  */
-interface ClientInterface
+interface WalgreensClientInterface
 {
 
     /**
