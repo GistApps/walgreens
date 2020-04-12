@@ -1,5 +1,5 @@
 <?php
-namespace Gist\Wallgreens;
+namespace Gist\Walgreens;
 
 use Gist\Walgreens\WalgreensClient;
 use Gist\Walgreens\StoreLookupInterface;

@@ -1,5 +1,5 @@
 <?php
-namespace Gist\Wallgreens;
+namespace Gist\Walgreens;
 
 /**
  * Object interface for building store lookup requests

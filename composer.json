@@ -8,7 +8,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Gist\\Walgreens\\WalgreensClient\\": "src/"
+            "Gist\\Walgreens\\": "src/"
         }
     },
     "authors": [

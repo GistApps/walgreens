@@ -1,5 +1,5 @@
 <?php
-namespace Gist\Wallgreens;
+namespace Gist\Walgreens;
 
 class InvalidRequestException extends \Exception
 {

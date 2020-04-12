@@ -1,11 +1,11 @@
 <?php
-namespace Gist\Wallgreens;
+namespace Gist\Walgreens;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Gist\Wallgreens\ConfigurationException;
-use Gist\Wallgreens\InvalidRequestException;
-use Gist\Wallgreens\StoreLookup;
+use Gist\Walgreens\ConfigurationException;
+use Gist\Walgreens\InvalidRequestException;
+use Gist\Walgreens\StoreLookup;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 
@@ -23,7 +23,7 @@ class WalgreensClient implements ClientInterface
      * Here's an example of creating a client using a base_uri and an array of
      * default request options to apply to each request:
      *
-     *     $client = new Gist\Wallgreens\Client([
+     *     $client = new Gist\Walgreens\Client([
      *         'endpoint'     => 'stores/search'
      *         'version'      => 'v1',
      *         'api_key'      => "123456789",

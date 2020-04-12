@@ -1,5 +1,5 @@
 <?php
-namespace Gist\Wallgreens;
+namespace Gist\Walgreens;
 
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Exception\GuzzleException;
