@@ -3,19 +3,24 @@ namespace Gist\Walgreens;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Gist\Walgreens\ConfigurationException;
-use Gist\Walgreens\InvalidRequestException;
+use Gist\Walgreens\Config;
 use Gist\Walgreens\StoreLookup;
+use Gist\Walgreens\PhotoPrint;
+use Gist\Walgreens\Utils\UUID;
+use Gist\Walgreens\WalgreensClientInterface;
+use Gist\Walgreens\Exception\ResponseException;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ClientException;
 
-class WalgreensClient implements ClientInterface
+class WalgreensClient implements WalgreensClientInterface
 {
     /** @var array Default request options */
     private $config;
 
     /** @var Client Set up guzzle http client */
-    private $guzzle;
+    public $guzzle;
+
 
     /**
      * Clients accept an array of constructor parameters.
@@ -38,71 +43,156 @@ class WalgreensClient implements ClientInterface
      */
     public function __construct(array $params = [])
     {
-       $this->configureDefaults($params);
+       $this->setupClient($params);
        $this->setupGuzzle();
     }
 
     public function getConfig(string $configOption)
     {
-      return $this->config[$configOption];
+
+      if (isset($this->config[$configOption])) {
+        return $this->config[$configOption];
+      }
+
+      return null;
+
     }
 
     public function request(array $params = [], string $endpoint)
     {
 
-      // Create a PSR-7 request object to send
 
-      // Set any headers that are applicable
-      // $headers = ['X-Foo' => 'Bar'];
-      $request = $this->getRequest($params, $endpoint);
-      // Set the request body json encoded;
-      $body    =   [
-          'json' => $request['params']
-      ];
+      // Get the request according the the endpoint.
+      $query = $this->getRequest($params, $endpoint);
 
-      // Send an async request.
-      $promise = $this->guzzle->requestAsync($request['type'], $request['url'], $body);
+      try {
 
-      // Handle the response.
-      $promise->then(
-          function (ResponseInterface $res) {
-              echo $res->getStatusCode() . "\n";
-          },
-          function (RequestException $e) {
-              echo $e->getMessage() . "\n";
-              echo $e->getRequest()->getMethod();
-          }
-      );
+        // Create a PSR-7 request object and send
+        $response = $this->guzzle->request($query['type'], $query['url'], $query['params']);
+
+        echo $endpoint . " status code: " . $response->getStatusCode() . "<br>";
+
+        echo "<br>";
+
+        $response = json_decode($response->getBody(), true);
+
+      } catch(ClientException $e) {
+
+        $response = [
+          'error' => true,
+          'message' => $e->getMessage(),
+        ];
+
+      } catch(RequestException $e) {
+
+        $response = [
+          'error' => true,
+          'message' => $e->getMessage(),
+        ];
+
+      }
+
+
+      echo "<pre><code>";
+      echo json_encode($response, JSON_PRETTY_PRINT);
+      echo "</code></pre>";
+
+      echo "<br>";
+      // Return the json
+      return $response;
+    }
+
+    /**
+     * Generate an upload url in the correct format
+     * to use for the imagte upload endpoint.
+     * Format: https://pstrgqp01.blob.core.windows.net/qpcontainerin/Image-YOUR_AFFILIATE_ID-a12b3cd-e4f5-6789-ghi0-1234567j89kl.jpg?sig=BLAHBLAHBLAH&se=YYYY-MM-DDT22%3A53%3A57Z&sv=YYYY-MM-DD&sp=w&sr=c
+     */
+    private function getUploadUrl()
+    {
+
+      $response = $this->request([], "photoprint_credentials");
+
+      if (!isset($response['cloud']) || !isset($response['cloud'][0]) || !isset($response['cloud'][0]['sasKeyToken'])) {
+        throw new ResponseException("There was an error generationg your upload credentials");
+      }
+
+      $affiliateId   = $this->getConfig('affiliate_id');
+
+      $uuId          = UUID::v4();
+
+      $sasToken      = $response['cloud'][0]['sasKeyToken'];
+
+      $blobContainer = explode("?", $sasToken, 2)[0];
+
+      $signature     = explode("?", $sasToken, 2)[1];
+
+      $imageName     = "Image-{$affiliateId}-{$uuId}.jpg";
+
+      $uploadUrl     = "{$blobContainer}/{$imageName}?{$signature}";
+
+      return $uploadUrl;
 
     }
 
     private function getRequest(array $params, string $endpoint)
     {
 
-      $version = $this->config['version'];
+      $headers = null;
 
       switch($endpoint) {
 
         case "store_locator":
+          $storeLookup = new StoreLookup();
           // Pass the request parameters and the class intance to the storelookup function.
-          $params  = StoreLookup::buildRequest($params, $this);
+          $params  = $storeLookup->buildRequest($params, $this);
           $type    = "POST";
-          $url     = "/stores/search/{$version}";
+          $url     = "/api/photo/store/v3";
         break;
 
-        /*case "store_locator":
+        case "photoprint_credentials":
+
+          $photoPrint = new PhotoPrint();
           // Pass the request parameters and the class intance to the storelookup function.
-          $params  = StoreLookup::buildRequest($params, $this);
+          $params  = $photoPrint->credentialsRequest($params, $this);
           $type    = "POST";
-          $url     = "/stores/search/{$version}";
-        break; */
+          $url     = "/api/photo/creds/v3";
+        break;
+
+        case "photoprint_upload":
+
+          // Generate the upload url needed by Walgreens
+          $uploadUrl  = $this->getUploadUrl();
+
+          $photoPrint = new PhotoPrint();
+          // Get the upload request
+          $params  = $photoPrint->uploadRequest($params, $this);
+          $type    = "PUT";
+          $url     = $uploadUrl;
+
+        break;
+
+        case "products":
+
+          $photoPrint = new PhotoPrint();
+          // Get the upload request
+          $params  = $photoPrint->productRequest($params, $this);
+          $type    = "POST";
+          $url     = "/api/photo/products/v3";
+
+        break;
+
+
+
+
       }
 
-      return [
-        'params' => $params,
-        'type'   => $type,
-        'url'    => $url
+      $request = [
+        'params'  => $params,
+        'type'    => $type,
+        'url'     => $url,
       ];
+      //echo json_encode($request,JSON_PRETTY_PRINT);
+      return $request;
 
     }
 
@@ -116,7 +206,7 @@ class WalgreensClient implements ClientInterface
       // http://docs.guzzlephp.org/en/stable/overview.html
 
       $this->guzzle = new Client([
-          'base_uri' => $this->config['baseUri'],
+          'base_uri' => $this->config['base_uri'],
       ]);
 
     }
@@ -126,48 +216,11 @@ class WalgreensClient implements ClientInterface
      *
      * @param array $params
      */
-    private function configureDefaults(array $params)
+    private function setupClient(array $params)
     {
 
-      // Sandbox example Url: https://services-qa.walgreens.com/api/stores/search/v1
-      // Production  example Url: https://services.walgreens.com/api/stores/search/v1
-
-      $options = [
-          'base_url' => "https://services.walgreens.com/api",
-          'version'  => "v1",
-      ];
-
-      if (isset($params['test']) && $params['test'] === true) {
-        $options['base_url'] = "https://services-qa.walgreens.com/api";
-      }
-
-      if (isset($params['version'])) {
-        $options['version'] = $params['version'];
-      }
-
-
-      // Make sure an endpoint is set up prior to creating the base uri
-      if (isset($params['api_key']) && $params['api_key'] === true) {
-        $options['api_key'] = $params['api_key'];
-      } else {
-        throw new InvalidRequestException("An API key must be included with the request to use the Walgreens API");
-      }
-
-      // Make sure an endpoint is set up prior to creating the base uri
-      if (isset($params['affiliate_id']) && $params['affiliate_id'] === true) {
-        $options['affiliate_id'] = $params['affiliate_id'];
-      } else {
-        throw new InvalidRequestException("An Affliiate ID must be included with the request to use the Walgreens API");
-      }
-
-      $this->config['base_uri']     = $options['base_url'];
-
-      $this->config['version']      = $options['version'];
-
-      $this->config['api_key']      = $options['api_key'];
-
-      $this->config['affiliate_id'] = $options['affiliate_id'];
-
+      $configClass = new Config();
+      $this->config = $configClass->setup($params);
 
     }
 }

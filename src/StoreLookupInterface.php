@@ -12,11 +12,11 @@ interface StoreLookupInterface
      * Add the api key to the lookup request
      * "apiKey"
      *
-     * @param String $apiKey
+     * @param WalgreensClient $client
      *
      * @return StoreLookup
      */
-    public function apiKey(String $apiKey);
+    public function apiKey(WalgreensClient $client);
 
 
     /**
@@ -27,7 +27,7 @@ interface StoreLookupInterface
      *
      * @return StoreLookup
      */
-    public function affiliateId(String $affiliateId);
+    public function affiliateId(WalgreensClient $client);
 
 
     /**
@@ -38,65 +38,89 @@ interface StoreLookupInterface
      *
      * @return StoreLookup
      */
-    public function latitude(String $latitude);
+    public function latitude(Array $params);
 
 
     /**
      * Adds a longitude
      * "lng"
      *
-     * @param String $latitude Add the latitud to the store lookup request
+     * @param Array $params
      *
      * @return StoreLookup
      */
-    public function longitude(String $longitude);
+    public function longitude(Array $params);
 
 
     /**
      * Adds a radius in miles for the lookup request
      * "r"
      *
-     * @param String $latitude Add a radius in miles
+     * @param Array $params
      *
      * @return StoreLookup
      */
-    public function radius(String $radius);
+    public function radius(Array $params);
 
+    /**
+     * Adds a zip code for the lookup request
+     * "zip"
+     *
+     * @param Array $params
+     *
+     * @return StoreLookup
+     */
+    public function zip(Array $params);
+
+    /**
+     * Adds an address for the lookup request
+     * "address"
+     *
+     * @param Array $params
+     *
+     * @return StoreLookup
+     */
+    public function address(Array $params);
 
     /**
      * Adds a request type - always returns "locator"
      * "requestType"
      *
-     * @param String $latitude Add a radius in miles
+     * @param Array $params
      *
      * @return StoreLookup
      */
-    public function requestType(String $latitude);
+    public function action(Array $params);
 
 
     /**
-     * OPTIONAL:
-     * Adds filter options to the lookup request
-     * "filterOptions"
+     * Add the product details to the lookup request
      *
-     * @param Array $filterOptions Add a radius in miles
+     * @param Array $params
      *
      * @return StoreLookup
      */
-    public function filterOptions(Array $options);
+    public function productDetails(Array $params);
 
 
     /**
-     * OPTIONAL:
-     * Adds the "nxtPrev" member to the request
-     * This will show the next page of results, starting at the number
-     * defined here
+     * add the product quantity
      *
-     * @param Integer $pageIndex
+     * @param Array $params
      *
      * @return StoreLookup
      */
-    public function pageIndex(Integer $pageIndex);
+    public function quantity(Array $params);
+
+    /**
+     * Adds a request type - always returns "locator"
+     * "requestType"
+     *
+     * @param Array $params
+     *
+     * @return StoreLookup
+     */
+    public function productId(Array $params);
 
 
     /**

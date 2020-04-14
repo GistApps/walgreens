@@ -1,7 +1,7 @@
 <?php
 namespace Gist\Walgreens\Exception;
 
-class ConfigurationException extends \Exception
+class ResponseException extends \Exception
 {
 
   // Redefine the exception so message isn't optional

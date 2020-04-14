@@ -3,23 +3,24 @@ namespace Gist\Walgreens;
 
 use Gist\Walgreens\WalgreensClient;
 use Gist\Walgreens\StoreLookupInterface;
+use Gist\Walgreens\Exception\InvalidRequestException;
 
 class StoreLookup implements StoreLookupInterface
 {
     /** @var array Default request options */
     private $request;
 
-    private function apiKey($client)
+    public function apiKey($client)
     {
       $this->request['apiKey'] = $client->getConfig('api_key');
     }
 
-    private function affiliateId($client)
+    public function affiliateId($client)
     {
       $this->request['affId'] = $client->getConfig('affiliate_id');
     }
 
-    private function appVersion($client)
+    public function appVersion($client)
     {
 
       $appVersion = $client->getConfig('app_version');
@@ -30,7 +31,7 @@ class StoreLookup implements StoreLookupInterface
 
     }
 
-    private function deviceInfo($client)
+    public function deviceInfo($client)
     {
 
       $deviceInfo = $client->getConfig('device_info');
@@ -41,25 +42,25 @@ class StoreLookup implements StoreLookupInterface
 
     }
 
-    private function lattitude($params)
+    public function latitude($params)
     {
 
-      if (isset($params['lattitude'])) {
-        $this->request['lat'] = $params['lattitude'];
+      if (isset($params['latitude'])) {
+        $this->request['latitude'] = $params['latitude'];
       }
 
     }
 
-    private function longitude($params)
+    public function longitude($params)
     {
 
       if (isset($params['longitude'])) {
-        $this->request['lng'] = $params['longitude'];
+        $this->request['longitude'] = $params['longitude'];
       }
 
     }
 
-    private function radius($params)
+    public function radius($params)
     {
 
       if (isset($params['radius'])) {
@@ -68,36 +69,63 @@ class StoreLookup implements StoreLookupInterface
 
     }
 
-    private function requestType($params)
+    public function action($params)
     {
 
-      $this->request['requestType'] = "location";
+      $this->request['act'] = "photoStores";
 
     }
 
-    private function filterOptions($params)
+    public function productId($params)
     {
 
-      if (isset($params['filter']) && is_array($params['filter'])) {
-        $this->request['filterOptions'] = $params['filter'];
+      if (isset($params['product_id']) && is_string($params['product_id'])) {
+        $this->request['productId'] = $params['product_id'];
+      } else {
+        throw new InvalidRequestException("You must specify a product id");
       }
 
     }
 
-    private function pageIndex($params)
+    public function productDetails($params)
     {
 
-      if (isset($params['page_index']) && is_integer($params['page_index'])) {
-        $this->request['nxtPrev'] = $params['page_index'];
+      if (isset($params['product_details']) && is_array($params['product_details'])) {
+        $this->request['productDetails'] = $params['product_details'];
+      } else {
+        throw new InvalidRequestException("You must specify product details in the request");
       }
 
     }
 
-    private function zip($params)
+    public function quantity($params)
     {
 
-      if (isset($params['zip']) && is_integer($params['zip'])) {
+      if (isset($params['quantity']) && is_string($params['quantity'])) {
+        $this->request['qty'] = $params['quantity'];
+      } else {
+        throw new InvalidRequestException("You must specify product quantity in the request");
+      }
+
+    }
+
+
+
+
+    public function zip($params)
+    {
+
+      if (isset($params['zip']) && is_string($params['zip'])) {
         $this->request['zip'] = $params['zip'];
+      }
+
+    }
+
+    public function address($params)
+    {
+
+      if (isset($params['address']) && is_string($params['address'])) {
+        $this->request['address'] = $params['address'];
       }
 
     }
@@ -113,11 +141,11 @@ class StoreLookup implements StoreLookupInterface
         return true;
       }
 
-      if (isset($this->request['lat']) && isset($this->request['lng'])) {
+      if (isset($this->request['longitude']) && isset($this->request['longitude'])) {
         return true;
       }
 
-      throw new InvalidRequestException("The request parameters must contain a zip, address, or lattitude and longitude cordinates");
+      throw new InvalidRequestException("The request parameters must contain a zip, address, or latitude and longitude cordinates");
 
     }
 
@@ -126,24 +154,36 @@ class StoreLookup implements StoreLookupInterface
      *
      * @param array $params
      */
-    public function buildRequest(array $params, WalgreensClient $client): StoreLookup
+    public function buildRequest(array $params, WalgreensClient $client): Array
     {
 
       $this->apiKey($client);
       $this->affiliateId($client);
       $this->appVersion($client);
       $this->deviceInfo($client);
-      $this->lattitude($params);
+      $this->latitude($params);
       $this->longitude($params);
       $this->radius($params);
-      $this->requestType($params);
-      $this->filterOptions($params);
-      $this->pageIndex($params);
+      $this->zip($params);
+      $this->address($params);
+      $this->action($params);
+      $this->productDetails($params);
+      //$this->productId($params);
+      //$this->quantity($params);
 
       //Validate the request before continueing
       $this->isValidRequest();
 
-      return $this->request;
+      $request = [
+        'json' => $this->request,
+      ];
+
+      echo "<pre><code>";
+      echo json_encode($request, JSON_PRETTY_PRINT);
+      echo "</code></pre>";
+
+
+      return $request;
 
     }
 }

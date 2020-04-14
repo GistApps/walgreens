@@ -16,14 +16,13 @@ interface WalgreensClientInterface
     /**
      * Send an HTTP request.
      *
-     * @param RequestInterface $request Request to send
-     * @param array            $options Request options to apply to the given
-     *                                  request and to the transfer.
+     * @param RequestInterface $params Request to send
+     * @param array            $endpoint The enpoint to retrieve
      *
      * @return ResponseInterface
      * @throws GuzzleException
      */
-    public function send(RequestInterface $request, array $options = []);
+    public function request(array $params = [], string $endpoint);
 
     /**
      * Get a client configuration option.
@@ -36,5 +35,5 @@ interface WalgreensClientInterface
      *
      * @return mixed
      */
-    public function getConfig($option = null);
+    public function getConfig(string $option);
 }
