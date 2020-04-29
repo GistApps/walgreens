@@ -73,5 +73,27 @@ interface ConfigInterface
      */
     public function deviceInfo(Array $params);
 
+    /**
+     * OPTIONAL:
+     * Adds a custom app version to the request. "publisherId"
+     * Used to add the revenue share for Walgreens
+     *
+     * @param String $appVersion
+     *
+     * @return Config
+     */
+    public function publisherId(Array $params);
+
+    /**
+     * OPTIONAL:
+     * Adds a custom app version to the request. "publisherId"
+     * Used to add the revenue share for Walgreens
+     *
+     * @param String $appVersion
+     *
+     * @return Config
+     */
+    public function channelInfo(Array $params);
+
 
 }

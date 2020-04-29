@@ -181,7 +181,15 @@ class WalgreensClient implements WalgreensClientInterface
 
         break;
 
+        case "checkout":
 
+          $checkout = new Checkout();
+
+          $params     = $checkout->landingUrlRequest();
+          $type       = "POST";
+          $url        = "/api/util/v3.0/mweb5url";
+
+        break;
 
 
       }
@@ -191,7 +199,7 @@ class WalgreensClient implements WalgreensClientInterface
         'type'    => $type,
         'url'     => $url,
       ];
-      //echo json_encode($request,JSON_PRETTY_PRINT);
+      echo json_encode($request,JSON_PRETTY_PRINT);
       return $request;
 
     }

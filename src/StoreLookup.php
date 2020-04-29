@@ -178,9 +178,9 @@ class StoreLookup implements StoreLookupInterface
         'json' => $this->request,
       ];
 
-      echo "<pre><code>";
+    /*echo "<pre><code>";
       echo json_encode($request, JSON_PRETTY_PRINT);
-      echo "</code></pre>";
+      echo "</code></pre>";*/
 
 
       return $request;

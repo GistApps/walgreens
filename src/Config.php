@@ -109,6 +109,36 @@ class Config implements ConfigInterface
 
     }
 
+    /**
+     * OPTIONAL: Used to add the revenue share partner ID.
+     *
+     * @param Array $params
+     *
+     * @return Config
+     */
+    public function publisherId(Array $params) {
+
+      if (isset($params['publisher_id'])) {
+        $this->config['publisherId'] = $params['publisher_id'];
+      }
+
+    }
+
+    /**
+     * Set to "web" if a web application
+     *
+     * @param Array $params
+     *
+     * @return Config
+     */
+    public function channelInfo(Array $params) {
+
+      if (isset($params['channel_info'])) {
+        $this->config['channelInfo'] = $params['channelInfo'];
+      }
+
+    }
+
 
     public function setup(Array $params)
     {
@@ -124,6 +154,7 @@ class Config implements ConfigInterface
       $this->baseUrl($params);
       $this->appVersion($params);
       $this->deviceInfo($params);
+      $this->publisherId($params);
 
       return $this->config;
     }
