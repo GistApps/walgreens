@@ -50,7 +50,7 @@ class Checkout implements CheckoutInterface
 
     }
 
-    public function publisherId($params)
+    public function publisherId($client)
     {
 
       $publisherId = $client->getConfig('publisher_id');
@@ -147,10 +147,11 @@ class Checkout implements CheckoutInterface
 
     }
 
-    public function expiryTime($params)
+    public function expiryTime()
     {
 
-      $expiry = new \DateTime("Plus 36 hours");
+      $expiry = new \DateTime();
+      $expiry = $expiry->add(new \DateInterval("PT36H"));
 
       // Ruturn ISO 8601 Formatted date
       $this->request['expiryTime'] = $expiry->format('c');
@@ -181,7 +182,7 @@ class Checkout implements CheckoutInterface
 
       if (!isset($params['customer']) || !is_array($params['customer'])) {
 
-        throw new InvalidRequestException("Please include customer details in the request.");
+        //throw new InvalidRequestException("Please include customer details in the request.");
 
       } else if (!isset($params['customer']['first_name'])) {
 
@@ -264,7 +265,6 @@ class Checkout implements CheckoutInterface
       $this->transaction();
       $this->action();
       $this->view();
-      $this->platform();
       $this->expiryTime();
 
       // Add dynamic properties for request
@@ -274,7 +274,7 @@ class Checkout implements CheckoutInterface
       $this->latitude($params);
       $this->longitude($params);
       $this->customer($params);
-      $this->notes($params);
+      $this->notes($params, $client);
 
       $request = [
         'json' => $this->request,

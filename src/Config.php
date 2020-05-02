@@ -119,7 +119,7 @@ class Config implements ConfigInterface
     public function publisherId(Array $params) {
 
       if (isset($params['publisher_id'])) {
-        $this->config['publisherId'] = $params['publisher_id'];
+        $this->config['publisher_id'] = $params['publisher_id'];
       }
 
     }
@@ -134,7 +134,7 @@ class Config implements ConfigInterface
     public function channelInfo(Array $params) {
 
       if (isset($params['channel_info'])) {
-        $this->config['channelInfo'] = $params['channelInfo'];
+        $this->config['channel_info'] = $params['channel_info'];
       }
 
     }
@@ -155,6 +155,7 @@ class Config implements ConfigInterface
       $this->appVersion($params);
       $this->deviceInfo($params);
       $this->publisherId($params);
+      $this->channelInfo($params);
 
       return $this->config;
     }

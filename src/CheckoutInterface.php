@@ -67,15 +67,15 @@ interface CheckoutInterface
      * $request['productGroupId'] = "STDPR" || "SQR01"
      * @return Checkout
      */
-    public function productGroup();
+    public function productGroup(Array $params);
 
     /**
-     * Used to associate the order to your publisher account. 
+     * Used to associate the order to your publisher account.
      * Signup for this here: https://signup.cj.com/member/signup/publisher/?cid=3655651#/branded?_k=0dijjx
      *
      * @return Checkout
      */
-    public function publisherId();
+    public function publisherId(WalgreensClient $client);
 
     /**
     * OPTIONAL:
@@ -95,21 +95,21 @@ interface CheckoutInterface
      *
      * @return Checkout
      */
-    public function images();
+    public function images(Array $params);
 
     /**
      * The channelInfo is used to pass the type of integration. Only set this as "web" if your integration is a website. If you integration is a mobile application pass an empty string.
      *
      * @return Checkout
      */
-    public function channelInfo();
+    public function channelInfo(WalgreensClient $client);
 
     /**
      * The callBackLink is used to pass URL we callback to after order submission/cancellation. Only set this if your integration is a website. DO NOT PASS IF YOUR APPLICATION IS A MOBILE APP.
      *
      * @return Checkout
      */
-    public function callBackLink();
+    public function callBackLink(Array $params);
 
     /**
      * The expiryTime is obtained from the expiryTime used to generate your uploaded photos, or, 36 hours from right now.
@@ -123,14 +123,14 @@ interface CheckoutInterface
      *
      * @return Checkout
      */
-    public function lattitude();
+    public function latitude(Array $params);
 
     /**
      * The lng is the longitude of the customer as a string. Example: "-87.945799"
      *
      * @return Checkout
      */
-    public function longitude();
+    public function longitude(Array $params);
 
     /**
      * The customer object contains (the next 4 parameters) all the info needed to pre-populate the order submission pages.
@@ -141,7 +141,7 @@ interface CheckoutInterface
      *
      * @return Checkout
      */
-    public function customer();
+    public function customer(Array $params);
 
 
     /**
@@ -191,7 +191,7 @@ interface CheckoutInterface
      *
      * @return Checkout
      */
-    public function notes(Array $params);
+    public function notes(Array $params, WalgreensClient $client);
 
 
     /**

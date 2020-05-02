@@ -21,6 +21,7 @@ class WalgreensClient implements WalgreensClientInterface
     /** @var Client Set up guzzle http client */
     public $guzzle;
 
+    const PRINT_REQUEST = false;
 
     /**
      * Clients accept an array of constructor parameters.
@@ -70,9 +71,12 @@ class WalgreensClient implements WalgreensClientInterface
         // Create a PSR-7 request object and send
         $response = $this->guzzle->request($query['type'], $query['url'], $query['params']);
 
-        echo $endpoint . " status code: " . $response->getStatusCode() . "<br>";
+        if (self::PRINT_REQUEST === true) {
+          echo $endpoint . " status code: " . $response->getStatusCode() . "<br/>";
 
-        echo "<br>";
+          echo "<br/>";
+        }
+
 
         $response = json_decode($response->getBody(), true);
 
@@ -92,12 +96,12 @@ class WalgreensClient implements WalgreensClientInterface
 
       }
 
-
-      echo "<pre><code>";
-      echo json_encode($response, JSON_PRETTY_PRINT);
-      echo "</code></pre>";
-
-      echo "<br>";
+      if (self::PRINT_REQUEST === true) {
+        echo "<pre><code>";
+        echo json_encode($response, JSON_PRETTY_PRINT);
+        echo "</code></pre>";
+        echo "<br/>";
+      }
       // Return the json
       return $response;
     }
@@ -185,7 +189,7 @@ class WalgreensClient implements WalgreensClientInterface
 
           $checkout = new Checkout();
 
-          $params     = $checkout->landingUrlRequest();
+          $params     = $checkout->landingUrlRequest($params, $this);
           $type       = "POST";
           $url        = "/api/util/v3.0/mweb5url";
 
@@ -199,7 +203,13 @@ class WalgreensClient implements WalgreensClientInterface
         'type'    => $type,
         'url'     => $url,
       ];
-      echo json_encode($request,JSON_PRETTY_PRINT);
+
+      if (self::PRINT_REQUEST === true) {
+        echo "<pre><code>";
+        echo json_encode($request, JSON_PRETTY_PRINT);
+        echo "</code></pre>";
+      }
+
       return $request;
 
     }
