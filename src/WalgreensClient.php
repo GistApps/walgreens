@@ -66,7 +66,7 @@ class WalgreensClient implements WalgreensClientInterface
       $query = $this->getRequest($params, $endpoint);
 
       try {
-
+        echo $query['url'] . "<br>";
         // Create a PSR-7 request object and send
         $response = $this->guzzle->request($query['type'], $query['url'], $query['params']);
 
@@ -113,7 +113,11 @@ class WalgreensClient implements WalgreensClientInterface
       $response = $this->request([], "photoprint_credentials");
 
       if (!isset($response['cloud']) || !isset($response['cloud'][0]) || !isset($response['cloud'][0]['sasKeyToken'])) {
-        throw new ResponseException("There was an error generationg your upload credentials");
+        echo "<pre><code>";
+        echo json_encode($response, JSON_PRETTY_PRINT);
+        echo "</code></pre>";
+        die();
+        throw new ResponseException("There was an error generating your upload credentials");
       }
 
       $affiliateId   = $this->getConfig('affiliate_id');
@@ -154,8 +158,12 @@ class WalgreensClient implements WalgreensClientInterface
           $photoPrint = new PhotoPrint();
           // Pass the request parameters and the class intance to the storelookup function.
           $params  = $photoPrint->credentialsRequest($params, $this);
+          echo "<pre><code>";
+          echo json_encode($params, JSON_PRETTY_PRINT);
+          echo "</code></pre>";
           $type    = "POST";
           $url     = "/api/photo/creds/v3";
+
         break;
 
         case "photoprint_upload":
@@ -181,6 +189,16 @@ class WalgreensClient implements WalgreensClientInterface
 
         break;
 
+        case "submit_order":
+
+          $photoPrint = new PhotoPrint();
+          // Get the upload request
+          $params  = $photoPrint->submitOrder($params, $this);
+          $type    = "POST";
+          $url     = "/api/photo/order/submit/v3";
+
+        break;
+
 
 
 
@@ -191,6 +209,9 @@ class WalgreensClient implements WalgreensClientInterface
         'type'    => $type,
         'url'     => $url,
       ];
+
+
+
       //echo json_encode($request,JSON_PRETTY_PRINT);
       return $request;
 

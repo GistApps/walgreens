@@ -62,10 +62,10 @@ class PhotoPrint implements PhotoPrintInterface
 
     }
 
-    public function action()
+    public function action($action)
     {
 
-      $this->request['act'] = "getphotoprods";
+      $this->request['act'] = $action;
 
     }
 
@@ -73,10 +73,53 @@ class PhotoPrint implements PhotoPrintInterface
     {
 
       if (isset($params['product_group']) && is_string($params['product_group'])) {
-        $this->request['product_group'] = $params['product_group'];
+        $this->request['productGroupId'] = $params['product_group'];
       }
 
     }
+
+    /*
+    * An array of JSON ProductDetails objects. JSON ProductDetails objects will contain the two below parameters.
+    */
+    public function productDetails($params)
+    {
+
+      if (!isset($params['products'])) {
+        throw new InvalidRequestException("You must specify products in order to submit an order");
+      }
+
+      $products = $params['products'];
+
+      foreach($products as $product) {
+
+        if (!isset($product['productId'])) {
+          throw new InvalidRequestException("You must specify a product ID for each submitted product");
+        }
+
+        if (!isset($product['imageDetails']) || !is_array($product['imageDetails']) || count($product['imageDetails']) <= 0) {
+          throw new InvalidRequestException("You must specify image details for each product");
+        }
+
+        foreach($product['imageDetails'] as $image) {
+
+          if (!isset($image['qty'])) {
+            throw new InvalidRequestException("You must specify a quantity for each image");
+          }
+
+          if (!isset($image['url'])) {
+            throw new InvalidRequestException("You must specify a url for each image");
+          }
+
+        }
+
+      }
+
+      $this->request['productDetails'] = $params['products'];
+
+
+    }
+
+
 
     /**
      * Build the store lookup request
@@ -125,8 +168,26 @@ class PhotoPrint implements PhotoPrintInterface
       $this->affiliateId($client);
       $this->appVersion($client);
       $this->deviceInfo($client);
-      $this->action();
+      $this->action("getphotoprods");
       $this->productGroup($params);
+
+      $request = [
+        'json' => $this->request,
+      ];
+
+      return $request;
+
+    }
+
+    public function submitOrder(array $params, WalgreensClient $client): Array
+    {
+
+      $this->apiKey($client);
+      $this->affiliateId($client);
+      $this->appVersion($client);
+      $this->deviceInfo($client);
+      $this->action("submitphotoorder");
+      $this->productDetails($params);
 
       $request = [
         'json' => $this->request,

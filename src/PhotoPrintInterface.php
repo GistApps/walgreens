@@ -77,7 +77,7 @@ interface PhotoPrintInterface
      *
      * @return PhotoPrint
      */
-    public function action();
+    public function action(string $action);
 
     /**
      * optional
@@ -88,6 +88,18 @@ interface PhotoPrintInterface
      * @return PhotoPrint
      */
     public function productGroup(Array $params);
+
+    /**
+     * required
+     * An array of JSON ProductDetails objects. JSON ProductDetails objects will contain the two below parameters.
+     * $request['productDetails'] = [{ "productId":"0000001", "imageDetails":SEE BELOW }, { "productId":"0000002", "imageDetails":SEE BELOW }];
+     *
+     * @param Array $params
+     *
+     * @return PhotoPrint
+     */
+    public function productDetails(Array $params);
+
 
 
 }
