@@ -32,6 +32,16 @@ interface PhotoPrintInterface
      */
     public function apiKey(WalgreensClient $client);
 
+    /**
+     * Add the publisher ID for affiliate program
+     * "publisherId"
+     *
+     * @param String $publisherId
+     *
+     * @return PhotoPrint
+     */
+
+    public function publisherId(WalgreensClient $client);
 
     /**
      * Add the affiliate ID to the lookup request
@@ -67,7 +77,7 @@ interface PhotoPrintInterface
      *
      * @return PhotoPrint
      */
-    public function deviceInfo();
+    public function deviceInfo(WalgreensClient $client);
 
     /**
      * Required for product lookup
@@ -99,6 +109,29 @@ interface PhotoPrintInterface
      * @return PhotoPrint
      */
     public function productDetails(Array $params);
+
+    /**
+     * required
+     * The promise time of the store selected by the customer returned from the Store Search endpoint, must be fetched uniquely for every order.
+     * $request['promiseTime'] = "MM-DD-YYYY H:MM AM/PM"
+     *
+     * @param Array $params
+     *
+     * @return PhotoPrint
+     */
+    public function promiseTime(Array $params);
+
+    public function firstName(Array $params);
+
+    public function lastName(Array $params);
+
+    public function phone(Array $params);
+
+    public function email(Array $params);
+
+    public function storeNum(Array $params);
+
+    public function affNotes(Array $params);
 
 
 

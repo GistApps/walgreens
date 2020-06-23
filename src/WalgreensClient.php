@@ -67,11 +67,14 @@ class WalgreensClient implements WalgreensClientInterface
       $query = $this->getRequest($params, $endpoint);
 
       try {
-        echo $query['url'] . "<br>";
+
         // Create a PSR-7 request object and send
         $response = $this->guzzle->request($query['type'], $query['url'], $query['params']);
 
         if (self::PRINT_REQUEST === true) {
+
+          echo $query['url'] . "<br>";
+
           echo $endpoint . " status code: " . $response->getStatusCode() . "<br/>";
 
           echo "<br/>";
@@ -117,10 +120,6 @@ class WalgreensClient implements WalgreensClientInterface
       $response = $this->request([], "photoprint_credentials");
 
       if (!isset($response['cloud']) || !isset($response['cloud'][0]) || !isset($response['cloud'][0]['sasKeyToken'])) {
-        echo "<pre><code>";
-        echo json_encode($response, JSON_PRETTY_PRINT);
-        echo "</code></pre>";
-        die();
         throw new ResponseException("There was an error generating your upload credentials");
       }
 

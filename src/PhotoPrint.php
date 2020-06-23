@@ -26,6 +26,12 @@ class PhotoPrint implements PhotoPrintInterface
       $this->request['affId'] = $client->getConfig('affiliate_id');
     }
 
+    public function publisherId($client)
+    {
+
+      $this->request['publisherId'] = $client->getConfig('publisher_id');
+    }
+
     public function appVersion($client)
     {
 
@@ -37,10 +43,10 @@ class PhotoPrint implements PhotoPrintInterface
 
     }
 
-    public function deviceInfo()
+    public function deviceInfo($client)
     {
 
-      $deviceInfo = null;
+      $deviceInfo = $client->getConfig('device_info');;
 
       if ($deviceInfo !== null) {
         $this->request['devInf'] = $deviceInfo;
@@ -119,6 +125,71 @@ class PhotoPrint implements PhotoPrintInterface
 
     }
 
+    public function promiseTime($params)
+    {
+      $this->request['promiseTime'] = $params['promise_time'];
+    }
+
+    public function firstName(Array $params)
+    {
+
+      if (!isset($params['first_name'])) {
+        throw new InvalidRequestException("You must specify a first_name");
+      }
+
+      $this->request['firstName'] = $params['first_name'];
+    }
+
+    public function lastName(Array $params)
+    {
+
+      if (!isset($params['last_name'])) {
+        throw new InvalidRequestException("You must specify a last_name");
+      }
+
+      $this->request['lastName'] = $params['last_name'];
+    }
+
+
+    public function phone(Array $params)
+    {
+
+      if (!isset($params['phone'])) {
+        throw new InvalidRequestException("You must specify a email");
+      }
+
+      $this->request['phone'] = $params['phone'];
+    }
+
+    public function email(Array $params)
+    {
+
+      if (!isset($params['email'])) {
+        throw new InvalidRequestException("You must specify a email");
+      }
+
+      $this->request['email'] = $params['email'];
+    }
+
+    public function storeNum(Array $params)
+    {
+
+      if (!isset($params['store_number'])) {
+        throw new InvalidRequestException("You must specify a store number");
+      }
+
+      $this->request['storeNum'] = $params['store_number'];
+    }
+
+    public function affNotes(Array $params)
+    {
+
+      if (!isset($params['note'])) {
+        throw new InvalidRequestException("You must specify a note");
+      }
+
+      $this->request['affNotes'] = $params['note'];
+    }
 
 
     /**
@@ -183,11 +254,21 @@ class PhotoPrint implements PhotoPrintInterface
     {
 
       $this->apiKey($client);
+      $this->publisherId($client);
       $this->affiliateId($client);
       $this->appVersion($client);
       $this->deviceInfo($client);
       $this->action("submitphotoorder");
       $this->productDetails($params);
+      $this->promiseTime($params);
+
+      $this->firstName($params);
+      $this->lastName($params);
+
+      $this->phone($params);
+      $this->email($params);
+      $this->storeNum($params);
+      $this->affNotes($params);
 
       $request = [
         'json' => $this->request,
